@@ -1,0 +1,7 @@
+# :concurrency: 5
+# :queues:
+#   - transactional_emails
+
+:concurrency: 5
+:queues:
+  - default

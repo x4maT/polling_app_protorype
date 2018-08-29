@@ -1,0 +1,58 @@
+require 'apnotic'
+
+class MyWorker
+  include Sidekiq::Worker
+
+  sidekiq_options queue: :push_notifications
+
+  APNOTIC_POOL = Apnotic::ConnectionPool.new({
+    cert_path: Rails.root.join("config", "certs", "apns_certificate.pem"),
+    cert_pass: "mypass"
+  }, size: 5)
+
+  def perform(token)
+    APNOTIC_POOL.with do |connection|
+      notification       = Apnotic::Notification.new(token)
+      notification.alert = "Hello from Apnotic!"
+
+      response = connection.push(notification)
+      raise "Timeout sending a push notification" unless response
+
+      if response.status == '410' ||
+        (response.status == '400' && response.body['reason'] == 'BadDeviceToken')
+        Device.find_by(token: token).destroy
+      end
+    end
+  end
+end
+
+
+def perform(post_id, device_id, message)
+  APNOTIC_POOL.with do |connection|
+    connection.on(:error) do |exception|
+      logger.error "Exception has been raised: #{exception}"
+    end
+  end
+end
+
+def send_notifications(notifications)
+        connection_pool.with do |connection|
+          connection.on(:error) do |exception|
+            logger.error "Exception has been raised: #{exception}"
+          end
+
+          notifications.each do |notification|
+            push = connection.prepare_push(notification)
+            push.on(:response) do |response|
+              if response.status == "410" || (response.status == "400" && response.body["reason"] == "BadDeviceToken")
+                bad_notification = notifications.find { |n| n.apns_id == response.headers["apns-id"] }
+                Device.where(push_token: bad_notification.token).update_all(push_token: nil)
+              elsif response.status != "200"
+                logger.info("[push_notifications ios] #{response.body['reason']}")
+              end
+            end
+            connection.push_async(push)
+          end
+          connection.join
+        end
+      end

@@ -1,0 +1,71 @@
+# # # # This is a sample build configuration for Ruby.
+# # # # Check our guides at https://confluence.atlassian.com/x/8r-5Mw for more examples.
+# # # # Only use spaces to indent your .yml configuration.
+# # # # -----
+# # # # You can specify a custom docker image from Docker Hub as your build environment.
+# # # image: ruby:2.5.0
+
+# # # pipelines:
+# # #   default:
+# # #     - step:
+# # #         caches:
+# # #           - bundler
+# # #         script: # Modify the commands below to build your repository.
+# # #           - bundle install
+
+# # # definitions:
+# # #   caches:
+# # #     bundler: ./vendor
+
+# # image: ruby:2.5.0
+
+# # pipelines:
+# #   default:
+# #     - step:
+# # 	    caches:
+# #           - bundler
+# #           - pip
+# #         script: # Modify the commands below to build your repository.
+# #           - bundle install --path vendor/bundle
+# #           - bundle exec rake
+# #           - aws --version
+# #           - rake db:setup
+# #           - rake db:test:prepare
+# #           - rspec
+# #         services:
+# #           - postgres
+# # definitions:
+# #   caches:
+# #     bundler: vendor/bundle
+# #     pip: ~/.cache/pip
+# #   services:
+# #     postgres:
+# #       image: postgres
+
+# image: ruby:2.5.0
+# pipelines:
+#   default:
+#     - step:
+#         caches:
+#           - bundler
+#           - pip
+#         script:
+#           - apt-get update && apt-get install -y python-dev
+#           - curl -O https://bootstrap.pypa.io/get-pip.py
+#           - python get-pip.py
+#           - pip install awsebcli --upgrade
+#           - pip install awscli --upgrade
+#           - bundle install --path vendor/bundle
+#           - bundle exec rake
+#           - aws --version
+#           - eb init IdeaScreenerApp -r us-east-1 -p arn:aws:elasticbeanstalk:us-east-1::platform/Ruby 2.5 (Puma) - v2.7.2 Operating system 64bit Amazon Linux 2017.09
+#           - eb deploy IdeaScreenerApp-dev
+#         services:
+#           - postgres
+# definitions:
+#   caches:
+#     bundler: vendor/bundle
+#     pip: ~/.cache/pip
+#   services:
+#     postgres:
+#       image: postgres

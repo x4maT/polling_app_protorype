@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  survey: one
+  gender: 
+  age: 
+  hh_income: 
+  education_level: 
+  lifestyle: 
+  relationship_status: 
+  life_stage: 
+  home_ownership: 
+
+two:
+  survey: two
+  gender: 
+  age: 
+  hh_income: 
+  education_level: 
+  lifestyle: 
+  relationship_status: 
+  life_stage: 
+  home_ownership: 
